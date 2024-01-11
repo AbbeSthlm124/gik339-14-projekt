@@ -9,15 +9,15 @@ function fetchData() {
     .then((result) => result.json())
     .then((bilr) => {
       if (bilr.length > 0) {
-        let html = "<div class='row row-cols-1 row-cols-md-2 row-cols-lg-3'>";
+        let html = "<section class='row'>";
 
         bilr.forEach((bil) => {
           html += `
-          <div class="mb-3 col-12 col-md-sm-6 col-md-6""> 
+          <div class="mb-3 col-12 col-md-6 col-lg-4"> 
             <div class="card">
-              <div class="card-body p-3" style="border: 5px solid ${bil.color.toLowerCase()};">
+              <div class="card-body" style="border: 5px solid ${bil.color.toLowerCase()};">
                 <h5 class="card-title">${bil.model}</h5>
-                <p class="card-text">Reg number: ${bil.regnr}</p>
+                <p class="card-text">Reg. number: ${bil.regnr}</p>
                 <p class="card-text">Manufacturer: ${bil.mfr}</p>
                 <div class="d-flex justify-content-end">
                   <button type="button" class="btn btn-primary btn-sm me-2" onclick="deleteBilr(${
@@ -32,14 +32,16 @@ function fetchData() {
           </div>`;
         });
 
-        html += "</div>";
+        html += "</section>";
 
         const cardContainer = document.getElementById("cardContainer");
         cardContainer.innerHTML = html;
+
+        modal("Successful.");
       }
     });
-  modal("Successful.");
 }
+
 function modal(message) {
   const feedbackModal = new bootstrap.Modal(document.getElementById("feedbackModal"), {
     keyboard: false,

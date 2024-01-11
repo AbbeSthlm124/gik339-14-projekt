@@ -1,44 +1,124 @@
 const url = "http://localhost:3000/bilr";
-fetch(url)
-  .then((result) => result.json())
-  .then((bilr) => console.log(bilr));
 
-const manufacturers = [
-  "Aston Martin",
-  "Audi",
-  "Bentley",
-  "BMW",
-  "Bugatti",
-  "Ford",
-  "Honda",
-  "Jaguar",
-  "Jeep",
-  "Lamborghini",
-  "Land Rover",
-  "Maybach",
-  "McLaren",
-  "Mercedes-Benz",
-  "Mitsubishi",
-  "Nissan",
-  "Opel",
-  "Peugeot",
-  "Porsche",
-  "Rolls-Royce",
-  "Saab",
-  "Subaru",
-  "Suzuki",
-  "Tesla",
-  "Toyota",
-  "Volkswagen",
-  "Volvo",
-  "W Motors",
-];
+const bilForm = document.getElementById("bilForm");
 
-const selectManufacturers = document.getElementById("mfr");
+window.addEventListener("load", fetchData);
 
-manufacturers.forEach((manufacturer) => {
-  const option = document.createElement("option");
-  option.value = manufacturer.toUpperCase();
-  option.text = manufacturer;
-  selectManufacturers.appendChild(option);
-});
+function fetchData() {
+  fetch(url)
+    .then((result) => result.json())
+    .then((bilr) => {
+      if (bilr.length > 0) {
+        let html = "<div class='row row-cols-1 row-cols-md-2 row-cols-lg-3'>";
+
+        bilr.forEach((bil) => {
+          html += `
+          <div class="mb-3 col-12 col-md-sm-6 col-md-6""> 
+            <div class="card">
+              <div class="card-body p-3" style="border: 5px solid ${bil.color.toLowerCase()};">
+                <h5 class="card-title">${bil.model}</h5>
+                <p class="card-text">Reg number: ${bil.regnr}</p>
+                <p class="card-text">Manufacturer: ${bil.mfr}</p>
+                <div class="d-flex justify-content-end">
+                  <button type="button" class="btn btn-primary btn-sm me-2" onclick="deleteBilr(${
+                    bil.id
+                  })">Delete</button>
+                  <button type="button" class="btn btn-primary btn-sm" onclick="setCurrentBilr(${
+                    bil.id
+                  })">Change</button>
+                </div>
+              </div>
+            </div>
+          </div>`;
+        });
+
+        html += "</div>";
+
+        const cardContainer = document.getElementById("cardContainer");
+        cardContainer.innerHTML = html;
+      }
+    });
+  modal("Successful.");
+}
+function modal(message) {
+  const feedbackModal = new bootstrap.Modal(document.getElementById("feedbackModal"), {
+    keyboard: false,
+  });
+
+  const modalBody = document.querySelector(".modal-body");
+  modalBody.innerHTML = `<p>${message}</p>`;
+
+  feedbackModal.show();
+}
+
+function setCurrentBilr(id) {
+  console.log("current", id);
+
+  fetch(`${url}/${id}`)
+    .then((result) => result.json())
+    .then((bil) => {
+      console.log(bil);
+
+      bilForm.regnr.value = bil.regnr;
+      bilForm.model.value = bil.model;
+      bilForm.mfr.value = bil.mfr;
+      bilForm.color.value = bil.color;
+
+      localStorage.setItem("currentId", bil.id);
+    });
+}
+
+function deleteBilr(id) {
+  console.log("delete", id);
+  fetch(`${url}/${id}`, { method: "DELETE" }).then((result) => fetchData());
+}
+
+console.log(bilForm);
+bilForm.addEventListener("submit", handleSubmit);
+
+function handleSubmit(e) {
+  e.preventDefault();
+  const serverBilObject = {
+    regnr: "",
+    model: "",
+    mfr: "",
+    color: "",
+  };
+  serverBilObject.regnr = bilForm.regnr.value;
+  serverBilObject.model = bilForm.model.value;
+  serverBilObject.mfr = bilForm.mfr.value;
+  serverBilObject.color = bilForm.color.value;
+
+  const id = localStorage.getItem("currentId");
+  if (id) {
+    serverBilObject.id = id;
+  }
+
+  const request = new Request(url, {
+    method: serverBilObject.id ? "PUT" : "POST",
+    headers: {
+      "content-type": "application/json",
+    },
+    body: JSON.stringify(serverBilObject),
+  });
+
+  fetch(request)
+    .then((response) => {
+      return response.json();
+    })
+    .then((data) => {
+      modal("Updated successfully");
+    })
+    .catch((error) => {
+      modal("An error occurred");
+    });
+}
+const clearBilFormButton = document.querySelector("[name='clearBilForm']");
+clearBilFormButton.addEventListener("click", handleClearForm);
+
+function handleClearForm(e) {
+  e.preventDefault();
+  console.log("Clear button clicked!");
+  bilForm.reset();
+  localStorage.removeItem("currentId");
+}

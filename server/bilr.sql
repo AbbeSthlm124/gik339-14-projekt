@@ -8,10 +8,10 @@ id            INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT
 ,color        VARCHAR(6) NOT NULL  
 );
 
-INSERT INTO bilr(id, regnr, model, mfr, color) VALUES (1, 'ABC132', 'XC60', 'VOLVO', 'BLACK');
+INSERT INTO bilr(id, regnr, model, mfr, color) VALUES (1, 'ABC132', 'XC60', 'Volvo', 'black');
 
-INSERT INTO bilr(id, regnr, model, mfr, color) VALUES (2, 'FJG459', 'CLA', 'MERCEDES', 'WHITE');
+INSERT INTO bilr(id, regnr, model, mfr, color) VALUES (2, 'FJG459', 'CLA', 'Mercedes-Benz', 'purple');
 
-INSERT INTO bilr(id, regnr, model, mfr, color) VALUES (4, 'ASD543', 'GOLF', 'WOLFSWAGEN', 'GRAY');
+INSERT INTO bilr(id, regnr, model, mfr, color) VALUES (3, 'ASD543', 'GOLF', 'Volkswagen', 'gray');
 
 select * from bilr;

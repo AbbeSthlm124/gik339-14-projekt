@@ -34,8 +34,7 @@ function fetchData() {
 
         html += "</section>";
 
-        const cardContainer = document.getElementById("cardContainer");
-        cardContainer.innerHTML = html;
+        document.getElementById("cardContainer").innerHTML = html;
 
         modal("Successful.");
       }
@@ -104,16 +103,12 @@ function handleSubmit(e) {
     body: JSON.stringify(serverBilObject),
   });
 
-  fetch(request)
-    .then((response) => {
-      return response.json();
-    })
-    .then((data) => {
-      modal("Updated successfully");
-    })
-    .catch((error) => {
-      modal("An error occurred");
-    });
+  fetch(request).then((response) => {
+    fetchData();
+
+    localStorage.removeItem("currentId");
+    bilForm.reset();
+  });
 }
 const clearBilFormButton = document.querySelector("[name='clearBilForm']");
 clearBilFormButton.addEventListener("click", handleClearForm);
